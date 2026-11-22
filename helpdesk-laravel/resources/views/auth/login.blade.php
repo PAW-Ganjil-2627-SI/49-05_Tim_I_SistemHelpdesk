@@ -6,54 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - IT Helpdesk System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
-<body>
+<body class="d-flex align-items-center justify-content-center vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-github shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('faq.daftar') }}">
-                <span class="text-gold"></span> IT Helpdesk System
-            </a>
-        </div>
-    </nav>
-
-    <div class="container py-5">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-custom shadow-sm p-4">
-                    <h4 class="fw-bold mb-3 text-gold border-bottom border-secondary pb-2">Login Teknisi IT</h4>
+            <div class="col-md-5 col-lg-4">
+                <div class="card card-custom p-4 shadow">
+                    <div class="text-center mb-4 pb-3 border-bottom border-secondary">
+                        <i class="bi bi-shield-lock-fill text-gold fs-1"></i>
+                        <h3 class="fw-bold text-gold mt-2 mb-1">Login Sistem IT</h3>
+                        <p class="text-white-50 small mb-0">Masuk ke Portal IT Support & Helpdesk</p>
+                    </div>
 
-                    @if ($errors->any())
-                    <div class="alert alert-danger bg-dark text-danger border-danger mb-3">{{ $errors->first() }}</div>
-                    @endif
+                    @include('partials.alerts')
 
-                    <form action="{{ route('login.proses') }}" method="POST">
+                    <form action="{{ Route::has('login.proses') ? route('login.proses') : '#' }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="username" class="form-label fw-semibold">Username</label>
-                            <input type="text" class="form-control form-control-github" id="username" name="username"
-                                value="{{ old('username') }}" required autofocus>
+                            <label for="username" class="form-label fw-semibold text-white">Username</label>
+                            <input type="text" name="username" id="username" class="form-control"
+                                placeholder="Masukkan username" value="{{ old('username') }}" required autofocus>
                         </div>
+
                         <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">Password</label>
-                            <input type="password" class="form-control form-control-github" id="password"
-                                name="password" required>
+                            <label for="password" class="form-label fw-semibold text-white">Password</label>
+                            <input type="password" name="password" id="password" class="form-control"
+                                placeholder="Masukkan password" required>
                         </div>
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                            <label class="form-check-label text-github-muted" for="remember">Ingat saya</label>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" name="remember" id="remember" class="form-check-input">
+                            <label for="remember" class="form-check-label text-white small">Ingat saya</label>
                         </div>
-                        <button type="submit" class="btn btn-custom-gold w-100 py-2">Masuk</button>
+
+                        <button type="submit" class="btn btn-custom-gold w-100 py-2 mb-3">Login</button>
                     </form>
 
+                    <div class="text-center small">
+                        <span class="text-white-50">Belum punya akun?</span>
+                        <a href="{{ Route::has('register') ? route('register') : '#' }}"
+                            class="text-gold text-decoration-none fw-semibold">Daftar Akun</a>
+                        <br>
+                        <a href="{{ url('/') }}" class="text-white-50 text-decoration-none mt-2 d-inline-block">←
+                            Kembali ke Beranda</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

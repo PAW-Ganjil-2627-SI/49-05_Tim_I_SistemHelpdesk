@@ -19,10 +19,18 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['username' => 'editor'],
+            ['username' => 'teknisi'],
             [
-                'password' => Hash::make('editor123'),
-                'role'     => 'editor',
+                'password' => Hash::make('teknisi123'),
+                'role'     => 'teknisi',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['username' => 'user'],
+            [
+                'password' => Hash::make('user123'),
+                'role'     => 'user',
             ]
         );
     }

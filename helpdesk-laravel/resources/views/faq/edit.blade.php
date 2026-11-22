@@ -1,91 +1,84 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Artikel Knowledge Base</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
+@section('title', 'Edit Artikel FAQ - IT Helpdesk System')
+@section('topbar-title', 'Edit Artikel Solusi Teknis')
+@section('menu-faq', 'active')
 
-<body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-github shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('faq.daftar') }}">
-                <span class="text-gold"></span> IT Helpdesk System
-            </a>
-        </div>
-    </nav>
-
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card card-custom shadow-sm p-4">
-                    <h3 class="fw-bold mb-3 text-gold border-bottom border-secondary pb-2">Edit Artikel Solusi</h3>
-
-                    <form action="{{ route('faq.update', $faq->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Judul Artikel Solusi / Troubleshooting</label>
-                            <input type="text" class="form-control form-control-github" name="judul"
-                                value="{{ old('judul', $faq->judul) }}" required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Kategori Masalah</label>
-                                <select class="form-select form-control-github" name="kategori" required>
-                                    <option value="Hardware" @selected($faq->kategori == 'Hardware')>Hardware</option>
-                                    <option value="Software" @selected($faq->kategori == 'Software')>Software</option>
-                                    <option value="Jaringan" @selected($faq->kategori == 'Jaringan')>Jaringan</option>
-                                    <option value="Akses & Akun" @selected($faq->kategori == 'Akses & Akun')>Akses &
-                                        Akun</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Nama Penulis / Teknisi</label>
-                                <input type="text" class="form-control form-control-github" name="penulis"
-                                    value="{{ old('penulis', $faq->penulis) }}" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Langkah-Langkah Troubleshooting / Solusi</label>
-                            <textarea class="form-control form-control-github" name="langkah_troubleshooting" rows="4"
-                                required>{{ old('langkah_troubleshooting', $faq->langkah_troubleshooting) }}</textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label d-block fw-semibold text-gold">Status Artikel</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusPublished"
-                                    value="Published" @checked($faq->status == 'Published')>
-                                <label class="form-check-label text-light" for="statusPublished">Published</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusDraft"
-                                    value="Draft" @checked($faq->status == 'Draft')>
-                                <label class="form-check-label text-light" for="statusDraft">Draft</label>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('faq.daftar') }}" class="btn btn-outline-gold">Batal</a>
-                            <button type="submit" class="btn btn-custom-gold">Simpan Perubahan</button>
-                        </div>
-                    </form>
-
-                </div>
+@section('content')
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-custom p-4 shadow-sm">
+            <div class="mb-4 pb-2 border-bottom border-secondary">
+                <h3 class="fw-bold text-gold mb-0">Edit Artikel Solusi</h3>
             </div>
+
+            <form action="{{ route('faq.update', $faq->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="judul" class="form-label fw-semibold text-white">Judul Artikel Solusi /
+                        Troubleshooting</label>
+                    <input type="text" name="judul" id="judul" class="form-control"
+                        value="{{ old('judul', $faq->judul) }}" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="kategori" class="form-label fw-semibold text-white">Kategori Masalah</label>
+                        <select name="kategori" id="kategori" class="form-select" required>
+                            <option value="Hardware"
+                                {{ old('kategori', $faq->kategori) == 'Hardware' ? 'selected' : '' }}>Hardware</option>
+                            <option value="Software"
+                                {{ old('kategori', $faq->kategori) == 'Software' ? 'selected' : '' }}>Software</option>
+                            <option value="Jaringan"
+                                {{ old('kategori', $faq->kategori) == 'Jaringan' ? 'selected' : '' }}>Jaringan</option>
+                            <option value="Akses & Akun"
+                                {{ old('kategori', $faq->kategori) == 'Akses & Akun' ? 'selected' : '' }}>Akses & Akun
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="penulis" class="form-label fw-semibold text-white">Nama Penulis / Teknisi</label>
+                        <input type="text" name="penulis" id="penulis" class="form-control"
+                            value="{{ old('penulis', $faq->penulis) }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="langkah_troubleshooting" class="form-label fw-semibold text-white">Langkah-Langkah
+                        Troubleshooting / Solusi</label>
+                    <textarea name="langkah_troubleshooting" id="langkah_troubleshooting" rows="5" class="form-control"
+                        required>{{ old('langkah_troubleshooting', $faq->langkah_troubleshooting) }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold d-block text-gold">Status Artikel</label>
+                    @if (Auth::user()->hasRole('admin'))
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status" id="statusPublished"
+                            value="Published" {{ old('status', $faq->status) == 'Published' ? 'checked' : '' }}>
+                        <label class="form-check-label text-white" for="statusPublished">Published</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status" id="statusDraft" value="Draft"
+                            {{ old('status', $faq->status) == 'Draft' ? 'checked' : '' }}>
+                        <label class="form-check-label text-white" for="statusDraft">Draft</label>
+                    </div>
+                    @else
+                    <input type="hidden" name="status" value="{{ $faq->status }}">
+                    <span class="badge bg-secondary px-3 py-2">{{ $faq->status }}</span>
+                    <small class="text-white-50 d-block mt-1">Hanya Admin yang dapat mengubah status menjadi
+                        Published.</small>
+                    @endif
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('faq.daftar') }}" class="btn btn-outline-warning">Batal</a>
+                    <button type="submit" class="btn btn-custom-gold px-4">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+</div>
+@endsection
