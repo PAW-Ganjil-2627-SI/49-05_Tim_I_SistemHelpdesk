@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Route;
 // =========================================================
 Route::view('/', 'templates.dashboard')->name('home');
 Route::view('/dashboard', 'templates.dashboard')->name('dashboard');
+Route::get('/daftar-gangguan', [GangguanController::class, 'daftar'])->name('gangguan.daftar');
 
 // Halaman Kerangka Sementara Modul A, B, dan D
-Route::view('/kategori', 'modul a.index')->name('kategori.index');
 Route::view('/teknisi', 'modul b.index')->name('teknisi.index');
 Route::view('/aset', 'modul d.index')->name('aset.index');
 
@@ -33,6 +33,13 @@ Route::middleware('guest')->group(function () {
 // =========================================================
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/', [GangguanController::class, 'index'])->name('home');
+    Route::post('/gangguan', [GangguanController::class, 'store'])->name('gangguan.store');
+
+    Route::get('/gangguan/{gangguan}/edit', [GangguanController::class, 'edit'])->name('gangguan.edit');
+    Route::put('/gangguan/{gangguan}', [GangguanController::class, 'update'])->name('gangguan.update');
+    Route::delete('/gangguan/{gangguan}', [GangguanController::class, 'destroy'])->name('gangguan.destroy');
 
     // Gate: hanya admin yang boleh menambah FAQ baru
     Route::get('/faq/tambah', [FaqController::class, 'create'])
