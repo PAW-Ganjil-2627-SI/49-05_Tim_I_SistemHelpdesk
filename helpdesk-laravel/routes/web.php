@@ -34,7 +34,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/', [GangguanController::class, 'index'])->name('home');
+     Route::get('/', [GangguanController::class, 'index'])->name('home');
     Route::post('/gangguan', [GangguanController::class, 'store'])->name('gangguan.store');
 
     Route::get('/gangguan/{gangguan}/edit', [GangguanController::class, 'edit'])->name('gangguan.edit');

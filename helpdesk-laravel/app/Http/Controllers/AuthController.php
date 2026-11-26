@@ -17,44 +17,45 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            return redirect()->intended(route('gangguan.daftar'));
+            return redirect()->intended(route('faq.daftar'));
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password tidak sesuai.',
-        ])->onlyInput('email');
+            'username' => 'Username atau password salah.',
+        ])->onlyInput('username');
     }
 
+    // Menampilkan form buat akun (Register)
     public function showRegister()
     {
         return view('auth.register');
     }
 
+    // Memproses pembuatan akun baru dengan role otomatis 'user'
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'username' => 'required|string|max:50|unique:users,username',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'username' => $data['username'],
             'password' => Hash::make($data['password']),
+            'role'     => 'user',
         ]);
 
+        // Otomatis login setelah berhasil mendaftar
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('gangguan.daftar')->with('success', 'Akun berhasil dibuat!');
+        return redirect()->route('faq.daftar')->with('success', 'Akun berhasil dibuat! Selamat datang, ' . $user->username . '.');
     }
 
     public function logout(Request $request)
@@ -63,6 +64,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('faq.daftar');
     }
 }
