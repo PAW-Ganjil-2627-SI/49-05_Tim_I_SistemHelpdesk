@@ -2,36 +2,45 @@
 
 namespace Database\Seeders;
 
+use App\Models\Gangguan;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::firstOrNew(['email' => 'admin@example.com']);
+        $admin->name = 'Admin IT';
+        $admin->password = Hash::make('admin789');
+        $admin->role = 'admin';
+        $admin->save();
 
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'password' => Hash::make('admin789'),
-                'role' => 'admin',
-            ]
-        );
+        $teknisi = User::firstOrNew(['email' => 'teknisi@example.com']);
+        $teknisi->name = 'Teknisi Jaringan';
+        $teknisi->password = Hash::make('teknisi789');
+        $teknisi->role = 'teknisi';
+        $teknisi->save();
 
-        User::updateOrCreate(
-            ['email' => 'teknisi@example.com'],
-            [
-                'password' => Hash::make('teknisi789'),
-                'role' => 'teknisi',
-            ]
-        );
+        $user = User::firstOrNew(['email' => 'user@example.com']);
+        $user->name = 'User Pelapor';
+        $user->password = Hash::make('user789');
+        $user->role = 'user';
+        $user->save();
+
+        if (! Gangguan::query()->exists()) {
+            Gangguan::create([
+                'jenis_gangguan' => 'Koneksi Wi-Fi Lab Terputus',
+                'tingkat_prioritas' => 'Tinggi',
+                'deskripsi_gangguan' => 'Access point di lantai 2 tidak memancarkan sinyal internet sejak pagi.',
+            ]);
+
+            Gangguan::create([
+                'jenis_gangguan' => 'Printer Ruang Tata Usaha Macet',
+                'tingkat_prioritas' => 'Sedang',
+                'deskripsi_gangguan' => 'Paper jam pada tray utama dan tinta hitam perlu diisi ulang.',
+            ]);
+        }
     }
 }

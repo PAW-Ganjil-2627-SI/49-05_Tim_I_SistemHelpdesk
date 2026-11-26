@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Gangguan;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class GangguanController extends Controller
 {
@@ -27,7 +27,7 @@ class GangguanController extends Controller
             'tingkat_prioritas' => 'required|in:Tinggi,Sedang,Rendah',
             'deskripsi_gangguan' => 'required|max:200',
         ]);
-        
+
         Gangguan::create($data);
 
         return redirect()->route('gangguan.daftar')->with('success', 'Gangguan berhasil diajukan.');
@@ -35,11 +35,14 @@ class GangguanController extends Controller
 
     public function edit(Gangguan $gangguan)
     {
+        Gate::authorize('update', $gangguan);
+
         return view('gangguan.edit', compact('gangguan'));
     }
+
     public function update(Request $request, Gangguan $gangguan)
     {
-        $this->authorize('update', $gangguan);
+        Gate::authorize('update', $gangguan);
 
         $data = $request->validate([
             'jenis_gangguan' => 'required|max:100',
@@ -48,13 +51,16 @@ class GangguanController extends Controller
         ]);
 
         $gangguan->update($data);
-        
-        return redirect()->route('gangguan.daftar')->with('success', 'Ajuan Gangguan berhasil diperbarui');
+
+        return redirect()->route('gangguan.daftar')->with('success', 'Ajuan Gangguan berhasil diperbarui.');
     }
 
     public function destroy(Gangguan $gangguan)
     {
+        Gate::authorize('delete', $gangguan);
+
         $gangguan->delete();
+
         return redirect()->route('gangguan.daftar')->with('success', 'Berhasil dihapus.');
     }
 }

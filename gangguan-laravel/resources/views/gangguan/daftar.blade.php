@@ -1,103 +1,99 @@
-<div>
-    <!-- Act only according to that maxim whereby you can, at the same time, will that it should become a universal law. - Immanuel Kant -->
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Gangguan IT</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">Gangguan IT</a>
-            
-            <div class="d-flex align-items-center">
+<body>
+    <nav class="navbar-custom">
+        <div class="navbar-container">
+            <a class="navbar-brand" href="{{ route('gangguan.daftar') }}">Sistem Laporan Gangguan IT</a>
+            <div>
                 @auth
-                    <span class="text-white me-3 d-none d-md-block">Halo, {{ Auth::user()->email }}</span>
-                    <form action="{{ url('logout') }}" method="POST" class="m-0 p-0">
+                    <span class="user-greeting">Halo, {{ Auth::user()->name }} ({{ strtoupper(Auth::user()->role) }})</span>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-sm fw-semibold">Logout</button>
+                        <button type="submit" class="btn-danger-custom">Logout</button>
                     </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-primary-custom" style="margin-right: 8px;">Login</a>
+                    <a href="{{ route('register') }}" class="btn-light-custom">Daftar Akun</a>
                 @endauth
-
-                @guest
-                    <a href="{{ url('login') }}" class="btn btn-light btn-sm fw-semibold">Login</a>
-                @endguest
             </div>
         </div>
     </nav>
-    <main class="container mb-5">
 
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-primary">Daftar Laporan Gangguan IT</h5>
-                <a href="/" class="btn btn-primary btn-sm fw-semibold">+ Tambah Gangguan Baru</a>
+    <main class="main-container">
+        @if (session('success'))
+            <div style="background-color: #064e3b; border: 1px solid #047857; color: #a7f3d0; padding: 12px; border-radius: 4px; font-size: 13px; margin-bottom: 20px;">
+                {{ session('success') }}
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
-                        <thead class="table-primary text-center">
-                            <tr>
-                                <th scope="col" style="width: 5%;">No.</th>
-                                <th scope="col" style="width: 20%;">Jenis Gangguan IT</th>
-                                <th scope="col" style="width: 15%;">Tingkat Prioritas</th>
-                                <th scope="col" style="width: 45%;">Deskripsi Gangguan</th>
+        @endif
+
+        <div class="card-custom">
+            <div class="card-header-custom">
+                <h5>Daftar Laporan Gangguan IT</h5>
+                @auth
+                    <a href="{{ route('home') }}" class="btn-primary-custom">+ Ajukan Gangguan</a>
+                @endauth
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Jenis Gangguan</th>
+                        <th>Tingkat Prioritas</th>
+                        <th>Deskripsi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($gangguan as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->jenis_gangguan }}</td>
+                            <td>
+                                @if ($item->tingkat_prioritas === 'Tinggi')
+                                    <span class="badge-tinggi">Tinggi</span>
+                                @elseif ($item->tingkat_prioritas === 'Sedang')
+                                    <span class="badge-sedang">Sedang</span>
+                                @else
+                                    <span class="badge-rendah">Rendah</span>
+                                @endif
+                            </td>
+                            <td>{{ $item->deskripsi_gangguan }}</td>
+                            <td>
                                 @auth
-                                <th scope="col" style="width: 15%;">Aksi</th>
-                                @endauth
-                            </tr>
-                        </thead>
-                        <tbody>
-                           @forelse ($gangguan as $item)
-                                <tr>
-                                    <th scope="row" class="text-center">{{ $loop->iteration }}</th>
-                       
-                                    <td class="fw-semibold">{{ $item->jenis_gangguan }}</td>
-                                 
-                                    <td class="text-center">
-                                        @php 
-                                            $prioritas = $item->tingkat_prioritas;
-                                            $badgeClass = 'bg-secondary';
-                                            if ($prioritas == 'Tinggi') $badgeClass = 'bg-danger';
-                                            elseif ($prioritas == 'Sedang') $badgeClass = 'bg-warning text-dark';
-                                            elseif ($prioritas == 'Rendah') $badgeClass = 'bg-success';
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }} px-2 py-1">{{ $prioritas }}</span>
-                                    </td>
-
-                                    <td>{{ $item->deskripsi_gangguan }}</td>
-                                    @auth
-                                    <td class="text-center">
-
                                     @can('update', $item)
-                                        <a href="{{ route('gangguan.edit', $item) }}" class="btn btn-warning btn-sm me-1">Edit</a>
+                                        <a href="{{ route('gangguan.edit', $item) }}" class="btn-warning-custom">Edit</a>
                                     @endcan
 
-                                        @can('akses-admin')
-                                        <form action="{{ route('gangguan.destroy', $item) }}" method="POST"
-                                            class="d-inline"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                    @can('delete', $item)
+                                        <form action="{{ route('gangguan.destroy', $item) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                            <button type="submit" class="btn-danger-custom">Hapus</button>
                                         </form>
-                                        @endcan
-                                    </td>
-                                    @endauth
-                                </tr>
-                        
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">Belum ada data gangguan IT yang tersimpan.</td>
-                                </tr>
-                            @endforelse
-                            
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    @endcan
+
+                                    @if (Auth::user()->role === 'user')
+                                        <span style="color: #8c9ba5; font-size: 12px;">Hanya Lihat</span>
+                                    @endif
+                                @else
+                                    <span style="color: #8c9ba5; font-size: 12px;">Login untuk melapor</span>
+                                @endauth
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #8c9ba5;">Belum ada data laporan gangguan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </main>
 </body>
