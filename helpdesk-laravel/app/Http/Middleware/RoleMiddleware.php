@@ -6,20 +6,23 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserHasRole
+class RoleMiddleware
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  Closure(Request): (Response)  $next
+     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
 
-        // belum login -> ke halaman login
         if (! $user) {
-            return redirect()->route('login');
+            abort(403, 'Anda harus login terlebih dahulu.');
         }
 
-        // sudah login tapi role tidak cocok -> 403
         if (! in_array($user->role, $roles, true)) {
-            abort(403, 'Kamu tidak punya izin untuk membuka halaman ini.');
+            abort(403, 'Anda tidak memiliki hak akses untuk melakukan aksi ini.');
         }
 
         return $next($request);

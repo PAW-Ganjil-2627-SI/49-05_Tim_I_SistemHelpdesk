@@ -25,21 +25,31 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'username' => fake()->unique()->userName(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'user',
+            'departemen_id' => null,
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Set the user role to admin.
      */
-    public function unverified(): static
+    public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Set the user role to teknisi.
+     */
+    public function teknisi(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'teknisi',
         ]);
     }
 }

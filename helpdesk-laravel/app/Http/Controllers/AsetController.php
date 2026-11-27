@@ -2,75 +2,95 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Aset;
+use App\Http\Requests\AsetPcRequest;
+use App\Http\Requests\UpdateKondisiAsetRequest;
+use App\Models\AsetPc;
+use App\Models\Departemen;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class AsetController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $query = Aset::query();
+        $user = Auth::user();
+        $departemenList = Departemen::orderBy('id')->get();
 
-        if ($request->filled('unit')) {
-            $query->where('unit', $request->unit);
-        }
+        $departemenId = ($user !== null && $user->isUser())
+            ? null
+            : ($request->filled('departemen_id') ? (int) $request->input('departemen_id') : null);
 
-        if ($request->filled('q')) {
-            $query->where(function ($w) use ($request) {
-                $w->where('kode', 'like', '%' . $request->q . '%')
-                  ->orWhere('nama', 'like', '%' . $request->q . '%');
-            });
-        }
+        $aset = AsetPc::with('departemen')
+            ->forViewer($user)
+            ->filter($departemenId, $request->input('q'))
+            ->orderBy('id')
+            ->get();
 
-        $aset = $query->orderBy('id')->get();
-
-        return view('aset.index', compact('aset'));
+        return view('aset.index', compact('aset', 'departemenList', 'departemenId'));
     }
 
-    public function create()
+    public function show(AsetPc $aset): View
     {
-        return view('aset.form', ['aset' => new Aset()]);
+        $aset->load('departemen');
+
+        // The 'view-aset' gate uses ?User so it allows guests (returns true for non-users)
+        Gate::authorize('view-aset', $aset);
+
+        return view('aset.show', compact('aset'));
     }
 
-    public function store(Request $request)
+    public function create(): View
     {
-        $data = $request->validate($this->rules());
+        $departemenList = Departemen::orderBy('nama')->get();
 
-        Aset::create($data);
-
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil ditambahkan.');
+        return view('aset.form', [
+            'aset' => new AsetPc(),
+            'departemenList' => $departemenList,
+        ]);
     }
 
-    public function edit(Aset $aset)
+    public function store(AsetPcRequest $request): RedirectResponse
     {
-        return view('aset.form', compact('aset'));
+        AsetPc::create($request->validated());
+
+        return redirect()->route('aset.index')->with('success', 'Aset PC berhasil ditambahkan.');
     }
 
-    public function update(Request $request, Aset $aset)
+    public function edit(AsetPc $aset): View
     {
-        $data = $request->validate($this->rules($aset->id));
+        $departemenList = Departemen::orderBy('nama')->get();
 
-        $aset->update($data);
-
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil diperbarui.');
+        return view('aset.form', compact('aset', 'departemenList'));
     }
 
-    public function destroy(Aset $aset)
+    public function update(AsetPcRequest $request, AsetPc $aset): RedirectResponse
+    {
+        $aset->update($request->validated());
+
+        return redirect()->route('aset.index')->with('success', 'Aset PC berhasil diperbarui.');
+    }
+
+    public function editKondisi(AsetPc $aset): View
+    {
+        $aset->load('departemen');
+
+        return view('aset.kondisi', compact('aset'));
+    }
+
+    public function updateKondisi(UpdateKondisiAsetRequest $request, AsetPc $aset): RedirectResponse
+    {
+        $aset->update($request->validated());
+
+        return redirect()->route('aset.index')->with('success', 'Kondisi dan status aset berhasil diperbarui.');
+    }
+
+    public function destroy(AsetPc $aset): RedirectResponse
     {
         $aset->delete();
 
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil dihapus.');
-    }
-
-    private function rules($id = null): array
-    {
-        return [
-            'kode' => ['required', 'max:20', Rule::unique('aset', 'kode')->ignore($id)],
-            'nama' => 'required|max:100',
-            'unit' => 'required|in:HRD,Finance,OPS',
-            'kondisi' => 'required|in:Baik,Perlu Servis,Rusak',
-            'status' => 'required|in:Aktif,Perbaikan',
-        ];
+        return redirect()->route('aset.index')->with('success', 'Aset PC berhasil dihapus.');
     }
 }
