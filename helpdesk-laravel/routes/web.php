@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StatusLayananController;
 
 // =========================================================
 // PUBLIK: BOLEH DIBUKA TANPA LOGIN (TAMU)
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'templates.dashboard')->name('home');
 Route::view('/dashboard', 'templates.dashboard')->name('dashboard');
 Route::get('/daftar-gangguan', [GangguanController::class, 'daftar'])->name('gangguan.daftar');
+Route::get('/status-layanan', [StatusLayananController::class, 'index'])->name('status.layanan');
 
 // Halaman Kerangka Sementara Modul A, B, dan D
 Route::view('/teknisi', 'modul b.index')->name('teknisi.index');
